@@ -1,38 +1,49 @@
-import React,{ Component } from "react";
+import React, { Component } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import {getSlider} from "../Actions/sliderAction";
-import { Table} from "react-bootstrap";
-import { Link} from "react-router-dom";
-
-
+import {
+  deleteSlider,
+  getSlider,
+  toggleVisible,
+} from "../Actions/sliderAction";
+import { Table } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 export class Sliders extends Component {
-
   constructor(props) {
     super(props);
-    console.log(this.props);
-    const getslider=this.props.getSlider()
-    console.log(getslider);
-    this.state={slider:[]}
-    this.setState({slider:this.props.slider})
+    //console.log(this.props);
 
+    const getslider = this.props.getSlider();
+
+    //console.log(getslider);
+    this.state = {  };
   }
+  // componentDidMount() {
+  //   this.setState(this.props.slider)
+  // }
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.slider !== prevProps.slider) {
+      this.setState(this.props.slider)
+  }
+}
+  
+  
 
-
-   handleDelete=(selectedId)=>{
+  handleDelete = (selectedId) => {
     const newSliderList = this.props.slider.filter((P) => P.id !== selectedId);
     console.log(selectedId);
     console.log(newSliderList);
-        
-  }
+    deleteSlider(selectedId);
+  };
 
   render() {
     console.log(this.props);
+    console.log(this.state);
     return (
       <div container>
         <br />
-     
+
         <h2 className="mx-auto"> Sliders and Settings </h2>
         <Table striped bordered hover>
           <thead>
@@ -53,28 +64,41 @@ export class Sliders extends Component {
                   <td>{slider.Title}</td>
                   <td>
                     {slider.IsActive === "visible" ? (
-                      <button type="button" class="btn btn-success">
+                      <button
+                        type="button"
+                        class="btn btn-success"
+                        onClick={
+                          toggleVisible(slider.id)
+                          // () => {
+                          //   return !this.state.isActive;
+                          // }
+                        }
+                      >
                         Visible
                       </button>
                     ) : (
-                      <button type="button" class="btn btn-danger">
+                      <button
+                        type="button"
+                        class="btn btn-danger"
+                        onClick={
+                          //toggleVisible(slider.id)
+                          () => {
+                            return !this.state.isActive;
+                          }
+                        }
+                      >
                         Non-Visible
                       </button>
                     )}
                   </td>
                   <td>
-                    <img
-                      src="https://i.ibb.co/xh26nr9/tables-1803-21000.png"
-                      alt=""
-                      height="40"
-                      width="40"
-                    />
+                    <img src={slider.ImageId} alt="" height="40" width="70" />
                   </td>
                   <td>{slider.Order}</td>
                   {/* <td>{slider.button}</td> */}
                   <td>
                     <div className="d-flex">
-                      <Link to={`${slider.id}`}>
+                      <Link to={`edit/${slider.id}`}>
                         <button
                           type="button"
                           className="btn btn-sm btn-success mr-auto gap-3"
@@ -108,18 +132,17 @@ export class Sliders extends Component {
   }
 }
 
-const mapStateToProps = ({sliderList}) => {
+const mapStateToProps = ({ sliderList }, props) => {
+  //console.log(props);
   return {
     slider: sliderList,
   };
 };
 
-const mapDispatchToProps = (dispatch) =>
-  bindActionCreators({getSlider}, dispatch);
+const mapDispatchToProps = {
+  getSlider,
+  deleteSlider,
+  toggleVisible,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Sliders);
-
-
-
-
-
